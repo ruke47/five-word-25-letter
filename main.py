@@ -3,10 +3,11 @@ from _datetime import datetime
 
 def main():
     valid_words = get_initial_words()
+    two_vowel_words = [word for word in valid_words if vowel_count(word) == 2]
     print(f"{len(valid_words)} five letter words with unique characters and no more than two vowels")
+    print(f"{len(two_vowel_words)} contain 2 vowels")
 
     words_by_letter = wordlist_to_map(valid_words)
-
     # figure out the least-popular letters
     # display_words_by_letter(words_by_letter)
 
@@ -16,7 +17,7 @@ def main():
 
         for i, word in enumerate(starting_words):
             # start with an empty set, and try to pick each q/j word as the first word in the set
-            result = try_pick((), word, valid_words, words_by_letter)
+            result = try_pick((), word, valid_words, words_by_letter, two_vowel_words)
             if result:
                 print(f"{i}/{len(starting_words)} Yahoo! {result}")
                 success.write(f"{result}\n")
@@ -57,13 +58,14 @@ def vowel_count(word: str) -> int:
     return count
 
 
-def try_pick(alredy_selected, new_word, candidates, words_by_letter):
+def try_pick(alredy_selected, new_word, candidates, words_by_letter, two_vowel_words):
     """
     Recursively searches "candidates" for a set of 5 words with 25 unique letters
     :param alredy_selected: the current list of unique words, excluding new_word
     :param new_word: the word to add to memo
     :param candidates: a set of valid words, none of which contain any letters used in memo
     :param words_by_letter: a map of each english letter to a list of candidate words that contain that letter
+    :param two_vowel_words: the list of all words that contain two vowels
     :return: returns either None if there is no valid solution, or a tuple of 5 words with 25 distinct characters
     """
 
@@ -79,6 +81,10 @@ def try_pick(alredy_selected, new_word, candidates, words_by_letter):
     for letter in new_word:
         remaining_candidates = remaining_candidates.difference(words_by_letter[letter])
 
+    # if our current word used up 2 vowels, all other words in the list only get 1
+    if vowel_count(new_word) > 1:
+        remaining_candidates = remaining_candidates.difference(two_vowel_words)
+
     # if there aren't enough candidate words left, give up
     if len(remaining_candidates) + len(new_selected) < 5:
         return None
@@ -88,7 +94,7 @@ def try_pick(alredy_selected, new_word, candidates, words_by_letter):
 
     # for each candidate remaining, recurse
     for candidate in remaining_candidates:
-        result = try_pick(new_selected, candidate, remaining_candidates, remaining_words_by_letter)
+        result = try_pick(new_selected, candidate, remaining_candidates, remaining_words_by_letter, two_vowel_words)
         if result:
             return result
     # if none of our candidates were fruitful, signal that upwards
