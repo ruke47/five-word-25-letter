@@ -1,7 +1,7 @@
 Five Words, 25 Letters
 ---
 
-This is an attempt to solve Matt Parker's problem from (this Youtube Video)[https://www.youtube.com/watch?v=_-AfhLQfb6w].
+This is an attempt to solve Matt Parker's problem from [this Youtube Video](https://www.youtube.com/watch?v=_-AfhLQfb6w).
 
 Briefly; how many sets of 5 valid English words can you find that contain 25 distinct letters.
 
